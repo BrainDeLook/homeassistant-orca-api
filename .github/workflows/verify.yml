@@ -40,6 +40,15 @@ jobs:
           assert health['status'] == 'healthy', health
           assert health['checks']['orcaslicer']['available'] is True, health
           PY
+      - name: Slice a test model through the API
+        run: |
+          profile_root="$(docker exec orca-api sh -c "find /opt/orca -type d -path '*/resources/profiles/BBL' -print -quit")"
+          test -n "$profile_root"
+          mkdir -p smoke-profiles
+          docker cp "orca-api:$profile_root/machine/Bambu Lab A1 0.4 nozzle.json" smoke-profiles/printer.json
+          docker cp "orca-api:$profile_root/process/0.20mm Standard @BBL A1.json" smoke-profiles/process.json
+          docker cp "orca-api:$profile_root/filament/Bambu PLA Basic @BBL A1.json" smoke-profiles/filament.json
+          python3 tests/smoke_slice.py
       - name: Show logs on failure
         if: failure()
         run: docker logs orca-api || true
