@@ -25,5 +25,7 @@ downloaded from the official 2.4.2 release at build time.
 
 ## Verification status
 
-The source compiles on Windows. The HA container build and runtime slicing
-need verification on the Pi 5 host.
+The source compiles on Windows. GitHub Actions builds native `aarch64` and
+`amd64` containers, checks `/health`, and slices a test STL through the HTTP
+API into a 3MF on both architectures. Installation on the user's Pi 5 and
+printing the generated file have not yet been verified.

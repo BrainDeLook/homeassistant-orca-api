@@ -18,6 +18,7 @@ The wrapper is derived from
 and remains under AGPL-3.0-or-later. OrcaSlicer is downloaded at build time
 from its official v2.4.2 GitHub release; its SHA-256 digest is checked.
 
-This package has been source-checked and Node-compiled on Windows. A full
-Raspberry Pi 5 container build and an STL-to-3MF slice must be verified on
-the target Home Assistant host before relying on it for printing.
+This package has been Node-compiled on Windows. GitHub Actions builds native
+`aarch64` and `amd64` containers and slices a test STL through the HTTP API
+into a 3MF on both. Installation on the target Home Assistant host and
+printing the generated file remain to be verified.
