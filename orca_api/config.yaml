@@ -1,0 +1,16 @@
+name: Bambuddy OrcaSlicer API
+description: OrcaSlicer 2.4.2 REST API for Bambuddy server-side slicing
+version: 0.1.0-orca2.4.2
+slug: orca_api
+url: https://github.com/BrainDeLook/homeassistant-orca-api
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: manual
+ports:
+  3000/tcp: 3003
+ports_description:
+  3000/tcp: OrcaSlicer API for Bambuddy
+watchdog: http://[HOST]:[PORT:3000]/health

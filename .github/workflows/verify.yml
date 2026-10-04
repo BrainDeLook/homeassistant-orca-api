@@ -1,0 +1,45 @@
+name: Verify Home Assistant app
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-and-health:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+          - arch: amd64
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build app
+        run: |
+          docker build \
+            --build-arg BUILD_ARCH=${{ matrix.arch }} \
+            --build-arg BUILD_VERSION=0.1.0-orca2.4.2 \
+            -t orca-api:${{ matrix.arch }} ./orca_api
+      - name: Check API and slicer
+        run: |
+          docker run -d --name orca-api -p 3003:3000 orca-api:${{ matrix.arch }}
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:3003/health > health.json; then
+              break
+            fi
+            sleep 3
+          done
+          cat health.json
+          python3 - <<'PY'
+          import json
+          with open('health.json', encoding='utf-8') as f:
+              health = json.load(f)
+          assert health['status'] == 'healthy', health
+          assert health['checks']['orcaslicer']['available'] is True, health
+          PY
+      - name: Show logs on failure
+        if: failure()
+        run: docker logs orca-api || true
